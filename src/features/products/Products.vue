@@ -2,58 +2,32 @@
 import { ref, onMounted, computed } from "vue";
 
 import useProductsRequest from "./api/useProductsRequest";
+import Compare from "./components/Compare.vue";
+import Favorite from "./components/Favorite.vue";
+import ProductCard from "./components/ProductCard.vue";
+import ProductTable from "./components/ProductTable.vue";
 import { useCatalogSearch } from "./composables/useCatalogSearch";
 import {
   filterProducts,
   sortProducts,
 } from "./composables/useCatalogToolbarOptions";
+import { useCompare } from "./composables/useCompare";
+import { useFavorites } from "./composables/useFavorites";
 
+import { toolbarConfig } from "@/features/products/constants/toolbarOptions";
 import type { Product } from "@/features/products/types";
+import VButton from "@/shared/components/VButton.vue";
 import VToolbar from "@/shared/components/VToolbar.vue";
-import VTable from "@/shared/components/table/VTable.vue";
 
-const { fetchProducts, isLoading } = useProductsRequest();
+const { fetchProducts, isLoading, error } = useProductsRequest();
 const products = ref<Product[]>([]);
+const totalProducts = ref(0);
+const currentLimit = ref(30);
 
 const toolbar = ref({
   filter: "category",
   sort: "",
 });
-
-const productsHeader = [
-  { key: "thumbnail", label: "Image", width: "100px" },
-  { key: "title", label: "Title", width: "1fr" },
-  { key: "brand", label: "Brand", width: "1fr" },
-  { key: "category", label: "Category", width: "1fr" },
-  { key: "price", label: "Price, $", width: "100px" },
-  { key: "rating", label: "Rating", width: "100px" },
-  { key: "stock", label: "Stock", width: "100px" },
-];
-
-const toolbarConfig = computed(() => [
-  {
-    key: "filter",
-    label: "Filter by",
-    options: [
-      { name: "All Products", value: "category" },
-      { name: "Only in-stock products", value: "in-stock" },
-      { name: "Only discounted products", value: "discounted" },
-    ],
-  },
-  {
-    key: "sort",
-    label: "Sort by",
-    options: [
-      { name: "Default", value: "" },
-      { name: "Price: low to high", value: "p-low" },
-      { name: "Price: high to low", value: "p-high" },
-      { name: "Rating: high to low", value: "r-high" },
-      { name: "Rating: low to high", value: "r-low" },
-      { name: "Title: A-Z", value: "A-Z" },
-      { name: "Title: Z-A", value: "Z-A" },
-    ],
-  },
-]);
 
 const toolbarResult = computed(() => {
   const filtered = filterProducts(products.value, toolbar.value.filter);
@@ -61,194 +35,240 @@ const toolbarResult = computed(() => {
 });
 const { searchQuery, searchedProducts } = useCatalogSearch(toolbarResult, 300);
 
-onMounted(async () => {
-  const result = await fetchProducts();
-  if (Array.isArray(result)) {
-    products.value = result;
+// Отримуємо списки для пропсів Favorite та Compare
+const { loadSavedProducts, savedProducts, toggleSaveProduct } = useFavorites();
+const {
+  comparedProducts,
+  errorMessage: compareError,
+  removeProduct,
+  clearCompare,
+  loadComparedProducts,
+} = useCompare();
+
+// Простий boolean для пагінації
+const hasMore = computed(() => currentLimit.value < totalProducts.value);
+
+// Основна функція завантаження
+const fetchItems = async (limit: number) => {
+  const result = await fetchProducts({ limit });
+  if (result && typeof result === "object" && "products" in result) {
+    products.value = result.products;
+    totalProducts.value = result.total;
+    currentLimit.value = limit;
   }
+};
+
+// Обробка запитів від таблиці
+const handleRequest = async (params: { limit: number }) => {
+  await fetchItems(params.limit);
+};
+
+const retryFetch = () => fetchItems(currentLimit.value);
+
+const resetFilters = async () => {
+  searchQuery.value = "";
+  toolbar.value = {
+    filter: "category",
+    sort: "",
+  };
+  currentLimit.value = 30;
+  await fetchItems(currentLimit.value);
+};
+
+onMounted(async () => {
+  loadSavedProducts();
+  loadComparedProducts();
+  await fetchItems(currentLimit.value);
 });
 </script>
 
 <template>
-  <VTable
-    :header="productsHeader"
-    :rows="searchedProducts"
-    :searchable="true"
-    :show-filters="true"
-    :loader="isLoading"
-  >
-    <template #toolBar>
+  <div class="products-container">
+    <div
+      v-if="error"
+      class="error-banner"
+    >
+      <p>{{ error }}</p>
+      <button
+        class="retry-button"
+        @click="retryFetch"
+      >
+        Спробувати знову
+      </button>
+    </div>
+    <Transition name="fade">
+      <div
+        v-if="compareError"
+        class="warning-banner"
+      >
+        <p>{{ compareError }}</p>
+      </div>
+    </Transition>
+    <div class="desktop-only">
+      <ProductTable
+        v-model:search-query="searchQuery"
+        v-model:toolbar="toolbar"
+        :rows="searchedProducts"
+        :is-loading="isLoading"
+        :has-more="hasMore"
+        :limit="currentLimit"
+        @request="handleRequest"
+        @reset-filters="resetFilters"
+      />
+    </div>
+    <div class="mobile-toolbar-wrapper">
       <VToolbar
         v-model:search="searchQuery"
         v-model:filters="toolbar"
         :filter-configs="toolbarConfig"
+        select-width="md"
         placeholder="Search by title, category or brand"
+        @reset-filters="resetFilters"
       />
-    </template>
-    <template #col-thumbnail="{ row }">
-      <img :src="row.thumbnail" :alt="row.title" class="product-image" />
-    </template>
-    <template #col-title="{ row }">
-      <p class="product-title">
-        {{ row.title }}
-      </p>
-    </template>
-    <template #col-brand="{ row }">
-      <p v-if="row.brand" class="product-brand">
-        {{ row.brand }}
-      </p>
-      <p v-else>—</p>
-    </template>
-    <template #col-category="{ row }">
-      <p class="product-category">
-        {{ row.category }}
-      </p>
-    </template>
-    <template #col-price="{ row }">
-      <p class="product-price">
-        {{ row.price }}
-      </p>
-    </template>
-    <template #col-rating="{ row }">
-      <p class="product-rating">
-        {{ row.rating }}
-      </p>
-    </template>
-    <template #col-stock="{ row }">
-      <p class="product-stock">
-        {{ row.stock }}
-      </p>
-    </template>
-  </VTable>
+    </div>
+    <div class="mobile-only">
+      <div class="mobile-product-grid">
+        <ProductCard
+          v-for="product in searchedProducts"
+          :key="product.id"
+          :product="product"
+        />
+      </div>
+
+      <div
+        v-if="hasMore"
+        class="mobile-load-more"
+      >
+        <VButton
+          text="Load More"
+          size="full"
+          :loader="isLoading"
+          @click="handleRequest({ limit: currentLimit + 20 })"
+        />
+      </div>
+    </div>
+    <Compare
+      :products="comparedProducts"
+      @remove="removeProduct"
+      @close="clearCompare"
+    />
+    <Favorite
+      :products="savedProducts"
+      @remove="(p) => toggleSaveProduct(false, p)"
+    />
+  </div>
 </template>
 
 <style scoped>
-:deep(.v-table-container) {
-  padding: 24px;
+.products-container {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
   background-color: #f9fafb;
-  height: calc(100vh - 48px); /* Залишаємо місце для зовнішніх відступів */
+  min-height: 100vh;
   box-sizing: border-box;
 }
 
-:deep(.v-table-sticky-header) {
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.error-banner,
+.warning-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-:deep(.v-table-wrapper) {
-  background: white;
-  border-radius: 12px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
+.error-banner {
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
 }
 
-/* Header styles */
-:deep(.v-table-header) {
-  background-color: #f8fafc;
-  border-bottom: 2px solid #f1f5f9;
+.warning-banner {
+  background-color: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  position: sticky;
+  top: 24px;
+  z-index: 100;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-:deep(.v-table-header-cell) {
-  padding: 16px;
-  color: #64748b;
+.retry-button {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
   font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Row and Cell styles */
-:deep(.v-table-row) {
-  border-bottom: 1px solid #f1f5f9;
+  font-weight: 600;
   transition: background-color 0.2s;
 }
 
-:deep(.v-table-row:hover) {
-  background-color: #f8fafc;
+.retry-button:hover {
+  background-color: #dc2626;
 }
 
-:deep(.v-table-cell) {
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  border-bottom: none;
+.mobile-only {
+  display: none;
 }
 
-/* Product specific styles */
-.product-image {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+/* Приховуємо саму таблицю в ProductTable, коли нам потрібен лише тулбар */
+.only-toolbar :deep(.v-table-sticky-header) {
+  position: static;
+}
+.only-toolbar :deep(.v-table-header),
+.only-toolbar :deep(.v-table-body),
+.only-toolbar :deep(.v-table-footer) {
+  display: none !important;
 }
 
-.product-title {
-  margin: 0;
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 14px;
+/* Анімації */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
 }
 
-.product-brand,
-.product-category {
-  margin: 0;
-  padding: 4px 10px;
-  border-radius: 100px;
-  font-size: 12px;
-  font-weight: 500;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
-
-.product-brand {
-  background-color: #f1f5f9;
-  color: #475569;
+.mobile-toolbar-wrapper {
+  display: none;
 }
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
 
-.product-category {
-  background-color: #eff6ff;
-  color: #2563eb;
-}
+  .mobile-only {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0 12px;
+  }
 
-.product-price {
-  margin: 0;
-  font-weight: 700;
-  color: #059669;
-  font-size: 15px;
-}
+  .products-container {
+    gap: 24px;
+  }
 
-.product-rating {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  font-weight: 600;
-  color: #b45309;
-}
+  .mobile-toolbar-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    background: white;
+    padding: 12px;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.05);
+  }
 
-.product-rating::before {
-  content: "★";
-  margin-right: 4px;
-  color: #f59e0b;
-}
-
-.product-stock {
-  margin: 0;
-  font-weight: 500;
-  color: #64748b;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Toolbar customization */
-:deep(.v-table-toolbar) {
-  padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-:deep(.v-table-toolbar p) {
-  margin: 0;
-  color: #94a3b8;
-  font-size: 13px;
-  font-style: italic;
+  .mobile-product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 </style>

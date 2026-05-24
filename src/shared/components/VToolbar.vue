@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import VButton from "@/shared/components/VButton.vue";
 import VDropDown from "@/shared/components/VDropDown.vue";
 import VInput from "@/shared/components/VInput.vue";
 
@@ -21,6 +22,7 @@ type ToolbarProps = {
   disabled?: boolean;
   selectWidth?: "sm" | "md" | "lg";
   placeholder?: string;
+  resetOptions?: boolean;
 };
 
 const {
@@ -29,12 +31,15 @@ const {
   disabled = false,
   selectWidth = "sm",
   placeholder = "",
+  resetOptions = true,
 } = defineProps<ToolbarProps>();
 
 const search = defineModel<string>("search");
 const filters = defineModel<Record<string, any>>("filters", {
   default: () => ({}),
 });
+
+const emit = defineEmits<{ "reset-filters": [void] }>();
 
 const updateFilter = (key: string, value: any) => {
   filters.value = {
@@ -58,6 +63,10 @@ const normalizedFilterConfigs = computed(() => {
     })),
   }));
 });
+
+const resetFilters = () => {
+  emit("reset-filters");
+};
 </script>
 
 <template>
@@ -85,48 +94,62 @@ const normalizedFilterConfigs = computed(() => {
       :class="sizeClasses[selectWidth]"
       @update:model-value="(val) => updateFilter(config.key, val)"
     />
+    <div class="reset-btn">
+      <VButton
+        v-if="resetOptions"
+        text="Reset filters"
+        @click="resetFilters"
+      />
+    </div>
   </div>
 </template>
 
 <style scoped>
 .v-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.reset-btn {
+  margin-left: auto;
 }
 
 .v-toolbar__search-container {
-    width: 20rem;
-    flex-shrink: 0;
+  max-width: 20rem;
+  flex-shrink: 0;
 }
 
 .v-toolbar__select {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .v-toolbar__select--sm {
-    width: 12rem;
+  width: 12rem;
 }
 
 .v-toolbar__select--md {
-    width: 17rem;
+  width: 16rem;
 }
 
 .v-toolbar__select--lg {
-    width: 22rem;
+  width: 20rem;
 }
 
-@media (max-width: 768px) {
-    .v-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
+@media (max-width: 1124px) {
+  .v-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .reset-btn {
+    margin-left: 0;
+  }
 
-    .v-toolbar__search-container,
-    .v-toolbar__select {
-        width: 100% !important;
-    }
+  .v-toolbar__search-container,
+  .v-toolbar__select {
+    width: 100% !important;
+  }
 }
 </style>

@@ -82,10 +82,16 @@ const btnSize: Record<ButtonSize, string> = {
         <slot>{{ props.text }}</slot>
       </span>
     </Transition>
-    <div v-if="$slots['icon-right']" class="v-button__icon-right">
+    <div
+      v-if="$slots['icon-right']"
+      class="v-button__icon-right"
+    >
       <slot name="icon-right" />
     </div>
-    <span v-if="props.tooltip && !showText" class="v-button__tooltip">
+    <span
+      v-if="props.tooltip && !showText"
+      class="v-button__tooltip"
+    >
       {{ props.tooltip }}
     </span>
   </button>
@@ -115,27 +121,33 @@ const btnSize: Record<ButtonSize, string> = {
   pointer-events: none;
 }
 
+/* Primary Variant */
 .v-button--primary {
-  border: 1px solid var(--primary);
-  background-color: var(--primary);
+  border: 1px solid #fff;
+  background-color: #2563eb;
+  color: #fff;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
 }
 
 .v-button--primary:not(:disabled):hover {
-  background-color: var(--activePrimary);
-  border-color: var(--activePrimary);
+  background-color: #fff;
+  border-color: #2563eb;
+  color: #2563eb;
 }
 
 .v-button--primary:not(:disabled):active {
   background-color: var(--activePrimary);
+  color: #fff;
   box-shadow: none;
 }
 
+/* Dangerous Variant */
 .v-button--dangerous {
   border: 1px solid var(--dangerous);
   background-color: var(--dangerous);
+  color: #fff;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
@@ -144,6 +156,7 @@ const btnSize: Record<ButtonSize, string> = {
 .v-button--dangerous:not(:disabled):hover {
   background-color: var(--activeDangerous);
   border-color: var(--activeDangerous);
+  color: #fff;
 }
 
 .v-button--dangerous:not(:disabled):active {
@@ -151,6 +164,7 @@ const btnSize: Record<ButtonSize, string> = {
   box-shadow: none;
 }
 
+/* Secondary Variant */
 .v-button--secondary {
   background-color: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
@@ -159,7 +173,6 @@ const btnSize: Record<ButtonSize, string> = {
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
-  transition: all 0.3s;
 }
 
 .v-button--secondary:not(:disabled):hover {
@@ -168,6 +181,7 @@ const btnSize: Record<ButtonSize, string> = {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Ghost Variant */
 .v-button--ghost {
   display: flex;
   align-items: center;
@@ -185,6 +199,7 @@ const btnSize: Record<ButtonSize, string> = {
   border: none !important;
 }
 
+/* Sidebar Variant */
 .v-button--sidebar {
   display: flex;
   align-items: center;
@@ -204,6 +219,7 @@ const btnSize: Record<ButtonSize, string> = {
   color: white;
 }
 
+/* Sizes */
 .v-button--sm {
   width: 2.5rem;
 }
@@ -229,6 +245,7 @@ const btnSize: Record<ButtonSize, string> = {
 .v-button__text {
   display: inline-block;
   white-space: nowrap;
+  color: inherit; /* Allow color to be set by variant classes */
 }
 
 .v-button__text--truncate {

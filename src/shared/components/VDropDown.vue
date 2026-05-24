@@ -67,8 +67,15 @@ const selectedLabel = computed((): string => {
 </script>
 
 <template>
-  <div class="v-dropdown" tabindex="0" @focusout="isOpened = false">
-    <span v-if="props.title" class="v-dropdown-title">
+  <div
+    class="v-dropdown"
+    tabindex="0"
+    @focusout="isOpened = false"
+  >
+    <span
+      v-if="props.title"
+      class="v-dropdown-title"
+    >
       {{ props.title }}
     </span>
     <button
@@ -92,7 +99,10 @@ const selectedLabel = computed((): string => {
         <span class="v-dropdown-label">
           {{ selectedLabel }}
         </span>
-        <span v-if="props.loader" class="v-dropdown-icon-container">
+        <span
+          v-if="props.loader"
+          class="v-dropdown-icon-container"
+        >
           <VLoader size="sm" />
         </span>
       </template>
@@ -117,7 +127,10 @@ const selectedLabel = computed((): string => {
         }"
         @click="selectedValue(item)"
       >
-        <slot name="options" :item="item" />
+        <slot
+          name="options"
+          :item="item"
+        />
         {{ item.label || item.value }}
       </li>
     </ul>
@@ -148,6 +161,7 @@ const selectedLabel = computed((): string => {
   border: none;
   padding: 0.25rem;
   cursor: pointer;
+  width: 12rem;
   min-height: 2.5rem;
 }
 

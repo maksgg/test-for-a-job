@@ -81,7 +81,10 @@ const inputId = computed(() => props.id || `v-input-${generatedId}`);
         { 'v-input-wrapper--disabled': props.disabled },
       ]"
     >
-      <div v-if="props.loader" class="v-input-loader">
+      <div
+        v-if="props.loader"
+        class="v-input-loader"
+      >
         <VLoader size="sm" />
       </div>
       <input
@@ -97,19 +100,25 @@ const inputId = computed(() => props.id || `v-input-${generatedId}`);
         :disabled="props.disabled"
         :value="props.modelValue"
         @input="updateModelValue"
-      />
+      >
     </div>
     <div
       v-if="validation?.$error && validation?.$errors?.length"
       class="v-input-error-container"
     >
-      <slot name="errorMsg" :message="validation.$errors[0]?.$message">
+      <slot
+        name="errorMsg"
+        :message="validation.$errors[0]?.$message"
+      >
         <span class="v-input-error-text">
           {{ validation.$errors[0]?.$message }}
         </span>
       </slot>
     </div>
-    <div v-else-if="supportText" class="v-input-support-container">
+    <div
+      v-else-if="supportText"
+      class="v-input-support-container"
+    >
       <slot name="sup-text">
         <span class="v-input-support-text">
           {{ props.supportText }}

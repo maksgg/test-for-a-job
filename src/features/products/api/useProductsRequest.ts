@@ -5,22 +5,23 @@ export default () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (
+    params: { limit?: number; skip?: number } = {},
+  ) => {
     isLoading.value = true;
     error.value = null;
 
     try {
-      const response = await axios.get(
-        "https://dummyjson.com/products?limit=170",
-      );
+      const response = await axios.get("https://dummyjson.com/products", {
+        params,
+      });
 
-      // Хоча axios за замовчуванням кидає помилку для статусів 4xx/5xx,
-      // ми можемо додати явну перевірку за потреби.
       if (response.status >= 400) {
         throw new Error(`Запит завершився зі статусом ${response.status}`);
       }
 
-      return response.data.products;
+      // Повертаємо весь об'єкт, щоб мати доступ до total, limit, skip
+      return response.data;
     } catch (err: unknown) {
       let errorMessage = "Сталася помилка";
 
@@ -31,7 +32,6 @@ export default () => {
       }
 
       error.value = errorMessage;
-
       return errorMessage;
     } finally {
       isLoading.value = false;
