@@ -1,0 +1,132 @@
+<script setup lang="ts">
+import { computed } from "vue";
+
+import VDropDown from "@/shared/components/VDropDown.vue";
+import VInput from "@/shared/components/VInput.vue";
+
+type SelectOption = {
+  name: string;
+  value: string;
+};
+
+type FilterConfig = {
+  key: string;
+  label: string;
+  options: SelectOption[];
+};
+
+type ToolbarProps = {
+  filterConfigs?: FilterConfig[];
+  isSearchable?: boolean;
+  disabled?: boolean;
+  selectWidth?: "sm" | "md" | "lg";
+  placeholder?: string;
+};
+
+const {
+  filterConfigs = [],
+  isSearchable = true,
+  disabled = false,
+  selectWidth = "sm",
+  placeholder = "",
+} = defineProps<ToolbarProps>();
+
+const search = defineModel<string>("search");
+const filters = defineModel<Record<string, any>>("filters", {
+  default: () => ({}),
+});
+
+const updateFilter = (key: string, value: any) => {
+  filters.value = {
+    ...filters.value,
+    [key]: value,
+  };
+};
+
+const sizeClasses: Record<ToolbarProps["selectWidth"] & string, string> = {
+  sm: "v-toolbar__select--sm",
+  md: "v-toolbar__select--md",
+  lg: "v-toolbar__select--lg",
+};
+
+const normalizedFilterConfigs = computed(() => {
+  return filterConfigs.map((config) => ({
+    ...config,
+    options: (config.options || []).map((opt) => ({
+      ...opt,
+      label: opt.name || (opt as any).label || opt.value,
+    })),
+  }));
+});
+</script>
+
+<template>
+  <div class="v-toolbar">
+    <div
+      v-if="isSearchable"
+      class="v-toolbar__search-container"
+    >
+      <VInput
+        v-model="search"
+        variant="toolbar"
+        :disabled="disabled"
+        :placeholder="placeholder"
+        icon="magnifyingGlass"
+      />
+    </div>
+    <VDropDown
+      v-for="config in normalizedFilterConfigs"
+      :key="config.key"
+      :model-value="filters[config.key]"
+      :options="config.options"
+      :disabled="disabled"
+      :title="config.label"
+      class="v-toolbar__select"
+      :class="sizeClasses[selectWidth]"
+      @update:model-value="(val) => updateFilter(config.key, val)"
+    />
+  </div>
+</template>
+
+<style scoped>
+.v-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.v-toolbar__search-container {
+    width: 20rem;
+    flex-shrink: 0;
+}
+
+.v-toolbar__select {
+    flex-shrink: 0;
+}
+
+.v-toolbar__select--sm {
+    width: 12rem;
+}
+
+.v-toolbar__select--md {
+    width: 17rem;
+}
+
+.v-toolbar__select--lg {
+    width: 22rem;
+}
+
+@media (max-width: 768px) {
+    .v-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .v-toolbar__search-container,
+    .v-toolbar__select {
+        width: 100% !important;
+    }
+}
+</style>

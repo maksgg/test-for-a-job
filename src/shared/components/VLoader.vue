@@ -1,0 +1,69 @@
+<script setup lang="ts">
+type LoaderProps = {
+  size?: "sm" | "md" | "lg";
+};
+
+const props = withDefaults(defineProps<LoaderProps>(), {
+  size: "sm",
+});
+const sizes = {
+  sm: "20px",
+  md: "28px",
+  lg: "40px",
+};
+</script>
+
+<template>
+  <div
+    class="v-loader-wrapper"
+    :style="{ '--size': sizes[props.size] }"
+  >
+    <div class="v-loader" />
+  </div>
+</template>
+
+<style scoped>
+.v-loader-wrapper {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    z-index: 100;
+}
+
+.v-loader {
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    display: inline-block;
+    border-top: 3px solid #a6adcf;
+    border-right: 3px solid transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    position: relative;
+}
+
+.v-loader::after {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    border-bottom: 3px solid #4b5bff;
+    border-left: 3px solid transparent;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>
