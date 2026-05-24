@@ -67,15 +67,8 @@ const selectedLabel = computed((): string => {
 </script>
 
 <template>
-  <div
-    class="v-dropdown"
-    tabindex="0"
-    @focusout="isOpened = false"
-  >
-    <span
-      v-if="props.title"
-      class="v-dropdown-title"
-    >
+  <div class="v-dropdown" tabindex="0" @focusout="isOpened = false">
+    <span v-if="props.title" class="v-dropdown-title">
       {{ props.title }}
     </span>
     <button
@@ -99,10 +92,7 @@ const selectedLabel = computed((): string => {
         <span class="v-dropdown-label">
           {{ selectedLabel }}
         </span>
-        <span
-          v-if="props.loader"
-          class="v-dropdown-icon-container"
-        >
+        <span v-if="props.loader" class="v-dropdown-icon-container">
           <VLoader size="sm" />
         </span>
       </template>
@@ -127,10 +117,7 @@ const selectedLabel = computed((): string => {
         }"
         @click="selectedValue(item)"
       >
-        <slot
-          name="options"
-          :item="item"
-        />
+        <slot name="options" :item="item" />
         {{ item.label || item.value }}
       </li>
     </ul>
@@ -139,162 +126,157 @@ const selectedLabel = computed((): string => {
 
 <style scoped>
 .v-dropdown {
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .v-dropdown-title {
-    font-size: var(--uiLabel-font-size, 14px);
-    color: var(--secondary, #4b5563);
-    font-weight: 500;
+  font-size: var(--uiLabel-font-size, 14px);
+  color: var(--secondary, #4b5563);
+  font-weight: 500;
 }
 
 .v-dropdown-trigger {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    background: none;
-    border: none;
-    padding: 0.25rem;
-    cursor: pointer;
-    min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  min-height: 2.5rem;
 }
 
 .v-dropdown-trigger--disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
-/* Trigger Variants */
 .v-dropdown-trigger--primary {
-    border: 2px solid var(--borderDefault, #e5e7eb);
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: var(--secondaryBg, #f3f4f6);
+  border: 2px solid var(--borderDefault, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--secondaryBg, #f3f4f6);
 }
 
 .v-dropdown-trigger--primary:hover:not(.v-dropdown-trigger--disabled) {
-    border-color: var(--borderHover, #2563eb);
+  border-color: var(--borderHover, #2563eb);
 }
 
 .v-dropdown-trigger--custom {
-    font-size: var(--bodyL-font-size, 16px);
-    color: var(--txtPrimary, #111827);
+  font-size: var(--bodyL-font-size, 16px);
+  color: var(--txtPrimary, #111827);
 }
 
 .v-dropdown-trigger--languages {
-    background-color: var(--primary, #3b82f6);
-    padding: 0.25rem;
-    color: var(--text-color, #ffffff);
+  background-color: var(--primary, #3b82f6);
+  padding: 0.25rem;
+  color: var(--text-color, #ffffff);
 }
 
 .v-dropdown-label {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex: 1;
-    text-align: left;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  text-align: left;
 }
 
 .v-dropdown-icon-container {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-/* Menu Styles */
 .v-dropdown-menu {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    z-index: 20;
-    width: max-content;
-    min-width: 100%;
-    text-align: start;
-    margin: 0;
-    list-style: none;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 20;
+  width: max-content;
+  min-width: 100%;
+  text-align: start;
+  margin: 0;
+  list-style: none;
 }
 
 .v-dropdown-menu--disabled {
-    cursor: not-allowed;
+  cursor: not-allowed;
 }
 
-/* Menu Variants */
 .v-dropdown-menu--primary {
-    border: 1px solid var(--borderDefault, #e5e7eb);
-    border-radius: 0.5rem;
-    background-color: var(--primaryBg, #ffffff);
-    padding: 0.5rem;
-    top: calc(100% + 4px);
+  border: 1px solid var(--borderDefault, #e5e7eb);
+  border-radius: 0.5rem;
+  background-color: var(--primaryBg, #ffffff);
+  padding: 0.5rem;
+  top: calc(100% + 4px);
 }
 
 .v-dropdown-menu--custom {
-    font-size: var(--bodyL-font-size, 16px);
-    color: var(--txtPrimary, #111827);
-    background-color: var(--primaryBg, #ffffff);
+  font-size: var(--bodyL-font-size, 16px);
+  color: var(--txtPrimary, #111827);
+  background-color: var(--primaryBg, #ffffff);
 }
 
 .v-dropdown-menu--languages {
-    background-color: var(--primary, #3b82f6);
-    padding: 0.25rem;
-    color: var(--text-color, #ffffff);
+  background-color: var(--primary, #3b82f6);
+  padding: 0.25rem;
+  color: var(--text-color, #ffffff);
 }
 
-/* Menu Placements */
 .v-dropdown-menu--topLeft {
-    bottom: 100%;
-    left: 0;
-    margin-bottom: 4px;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 4px;
 }
 
 .v-dropdown-menu--topRight {
-    bottom: 100%;
-    right: 0;
-    margin-bottom: 4px;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 4px;
 }
 
 .v-dropdown-menu--bottomLeft {
-    top: 100%;
-    left: 0;
-    margin-top: 4px;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
 }
 
 .v-dropdown-menu--bottomRight {
-    top: 100%;
-    right: 0;
-    margin-top: 4px;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
 }
 
-/* Items */
 .v-dropdown-item {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    font-size: var(--bodyL-font-size, 16px);
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: var(--bodyL-font-size, 16px);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .v-dropdown-item:hover:not(.v-dropdown-item--disabled) {
-    background-color: var(--borderDefault, #e5e7eb);
+  background-color: var(--borderDefault, #e5e7eb);
 }
 
 .v-dropdown-item--dangerous {
-    color: var(--dangerous, #ef4444);
+  color: var(--dangerous, #ef4444);
 }
 
 .v-dropdown-item--disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>

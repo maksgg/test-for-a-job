@@ -354,7 +354,6 @@ const loadMore = () => {
   align-self: center;
 }
 
-/* Grid helper classes */
 .v-table-grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
@@ -395,7 +394,6 @@ const loadMore = () => {
   grid-template-columns: none;
 }
 
-/* Alignment helper classes */
 .text-left {
   text-align: left;
 }
