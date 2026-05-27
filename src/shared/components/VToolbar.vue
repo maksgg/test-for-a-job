@@ -106,7 +106,8 @@ const resetFilters = () => {
 
 <style scoped>
 .v-toolbar {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
   align-items: center;
   gap: 1.5rem;
   width: 100%;
@@ -139,7 +140,7 @@ const resetFilters = () => {
 
 @media (max-width: 1124px) {
   .v-toolbar {
-    flex-direction: column;
+    grid-template-columns: repeat(2, auto);
     align-items: stretch;
     gap: 1rem;
   }
@@ -150,6 +151,11 @@ const resetFilters = () => {
   .v-toolbar__search-container,
   .v-toolbar__select {
     width: 100% !important;
+  }
+}
+@media (max-width:700px) {
+  .v-toolbar {
+    grid-template-columns: 1fr;
   }
 }
 </style>
