@@ -84,23 +84,12 @@ onMounted(async () => {
 
 <template>
   <div class="products-container">
-    <div
-      v-if="error"
-      class="error-banner"
-    >
+    <div v-if="error" class="error-banner">
       <p>{{ error }}</p>
-      <button
-        class="retry-button"
-        @click="retryFetch"
-      >
-        Спробувати знову
-      </button>
+      <button class="retry-button" @click="retryFetch">Спробувати знову</button>
     </div>
     <Transition name="fade">
-      <div
-        v-if="compareError"
-        class="warning-banner"
-      >
+      <div v-if="compareError" class="warning-banner">
         <p>{{ compareError }}</p>
       </div>
     </Transition>
@@ -135,10 +124,7 @@ onMounted(async () => {
         />
       </div>
 
-      <div
-        v-if="hasMore"
-        class="mobile-load-more"
-      >
+      <div v-if="hasMore" class="mobile-load-more">
         <VButton
           text="Load More"
           size="full"

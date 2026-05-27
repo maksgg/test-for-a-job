@@ -348,7 +348,7 @@ const loadMore = () => {
 
 .v-table-sticky-header {
   flex-shrink: 0;
-  z-index: 20;
+  z-index: 0;
   position: sticky;
   top: 0;
   background-color: var(--primaryBg, #ffffff);
