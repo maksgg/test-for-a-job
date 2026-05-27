@@ -65,7 +65,7 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
           v-model:filters="toolbar"
           :filter-configs="toolbarConfig"
           select-width="md"
-          placeholder="Search by title, category or brand"
+          placeholder="Search by..."
           @reset-filters="resetFilters"
         />
       </template>
