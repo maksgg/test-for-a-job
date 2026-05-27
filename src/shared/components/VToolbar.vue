@@ -117,7 +117,7 @@ const resetFilters = () => {
 }
 
 .v-toolbar__search-container {
-  max-width: 20rem;
+  max-width: 22rem;
   flex-shrink: 0;
 }
 
@@ -130,7 +130,7 @@ const resetFilters = () => {
 }
 
 .v-toolbar__select--md {
-  width: 16rem;
+  max-width: 100%;
 }
 
 .v-toolbar__select--lg {

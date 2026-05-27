@@ -91,7 +91,7 @@ const isEmpty = computed(() => props.products.length === 0);
           {{ row.rating }}
         </template>
         <template #col-stock="{ row }">
-          {{ row.stock }} шт.
+          {{ row.stock }}
         </template>
         <template #col-category="{ row }">
           {{ firstLetterUp(row.category) }}
