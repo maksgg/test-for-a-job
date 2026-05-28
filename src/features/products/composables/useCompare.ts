@@ -2,7 +2,6 @@ import { ref } from "vue";
 
 import type { Product } from "@/features/products/types";
 
-// Спільний стан порівняння (Singleton)
 const comparedProducts = ref<Product[]>([]);
 const errorMessage = ref<string | null>(null);
 const isLoaded = ref(false);
@@ -43,7 +42,7 @@ export function useCompare() {
     }
 
     if (comparedProducts.value.length >= 3) {
-      errorMessage.value = "Можна порівняти не більше 3 товарів одночасно.";
+      errorMessage.value = "You can compare no more than 3 products at a time.";
       setTimeout(() => {
         errorMessage.value = null;
       }, 5000);

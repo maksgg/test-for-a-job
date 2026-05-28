@@ -310,7 +310,7 @@ const loadMore = () => {
         class="v-table-footer"
       >
         <VButton
-          text="More"
+          text="Load more"
           class="v-table-load-more"
           :disabled="loader"
           @click="loadMore"
@@ -357,6 +357,7 @@ const loadMore = () => {
 }
 
 .v-table-toolbar-container {
+  padding: 20px;
   background-color: var(--primaryBg, #ffffff);
   scrollbar-gutter: stable;
 }

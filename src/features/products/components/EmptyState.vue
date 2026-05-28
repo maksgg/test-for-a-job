@@ -4,16 +4,16 @@ interface CompareProps {
   text: string;
 }
 
-const props = defineProps<CompareProps>();
+const { title, text } = defineProps<CompareProps>();
 </script>
 
 <template>
   <div class="empty-state">
     <h3 class="title">
-      {{ props.title }}
+      {{ title }}
     </h3>
     <p class="text">
-      {{ props.text }}
+      {{ text }}
     </p>
   </div>
 </template>
@@ -29,7 +29,7 @@ const props = defineProps<CompareProps>();
   background-color: #fff;
   border-radius: 12px;
   padding: 40px;
-  box-shadow: 0 1px 0 var(--disabledBorder, #f1f5f9);
+  box-shadow: 0 1px 0 #f1f5f9;
 }
 
 .title {

@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import EmptyState from "@/features/products/components/EmptyState.vue";
 import type { Product } from "@/features/products/types";
-import VTable from "@/shared/components/table/VTable.vue";
+import { VTable } from "@/shared/components/index";
 import { firstLetterUp } from "@/shared/utils/firstLetterUp";
 
 interface CompareProps {
@@ -11,9 +11,7 @@ interface CompareProps {
   compareLimit?: number;
 }
 
-const props = withDefaults(defineProps<CompareProps>(), {
-  compareLimit: 3,
-});
+const { products, compareLimit = 3 } = defineProps<CompareProps>();
 
 const emit = defineEmits<{
   remove: [id: number];
@@ -28,7 +26,7 @@ const comparisonFields = [
   { label: "Discount", key: "discountPercentage", type: "discount" },
 ];
 
-const isEmpty = computed(() => props.products.length === 0);
+const isEmpty = computed(() => products.length === 0);
 </script>
 
 <template>
@@ -37,7 +35,6 @@ const isEmpty = computed(() => props.products.length === 0);
     title="Add products for comparing"
     text="Chose products from table"
   />
-
   <div
     v-if="!isEmpty"
     class="compare-container"
@@ -54,11 +51,10 @@ const isEmpty = computed(() => props.products.length === 0);
           Clear all
         </button>
       </div>
-
       <VTable
         variant="compare"
         :header="comparisonFields"
-        :rows="props.products"
+        :rows="products"
       >
         <template #compare-header="{ row }">
           <div class="product-header-content">
@@ -76,14 +72,11 @@ const isEmpty = computed(() => props.products.length === 0);
             </button>
           </div>
         </template>
-
         <template #compare-empty>
           <div class="empty-placeholder">
             Add product for comparison
           </div>
         </template>
-
-        <!-- Custom slots for formatting in VTable -->
         <template #col-price="{ row }">
           ${{ row.price }}
         </template>
@@ -101,8 +94,6 @@ const isEmpty = computed(() => props.products.length === 0);
         </template>
       </VTable>
     </div>
-
-    <!-- Mobile View (Optimized Aligned Grid) -->
     <div class="mobile-compare">
       <div class="mobile-head">
         <div class="head-text">
@@ -110,7 +101,7 @@ const isEmpty = computed(() => props.products.length === 0);
             Comparison
           </h2>
           <p class="subtitle">
-            {{ products.length }}/{{ props.compareLimit }} selected
+            {{ products.length }}/{{ compareLimit }} selected
           </p>
         </div>
         <button
@@ -120,14 +111,12 @@ const isEmpty = computed(() => props.products.length === 0);
           Clear
         </button>
       </div>
-
       <div class="scroll-wrapper no-scrollbar">
         <div class="comparison-grid">
-          <!-- Top Sticky Header Row -->
           <div class="grid-row header-row">
             <div class="sticky-col label-header" />
             <div
-              v-for="product in props.products"
+              v-for="product in products"
               :key="'h-' + product.id"
               class="product-col"
             >
@@ -147,7 +136,6 @@ const isEmpty = computed(() => props.products.length === 0);
                 {{ product.title }}
               </div>
             </div>
-            <!-- Empty Slots -->
             <div
               v-for="n in compareLimit - products.length"
               :key="'eh-' + n"
@@ -169,9 +157,8 @@ const isEmpty = computed(() => props.products.length === 0);
             <div class="sticky-col attribute-label">
               {{ field.label }}
             </div>
-
             <div
-              v-for="product in props.products"
+              v-for="product in products"
               :key="field.key + product.id"
               class="product-col value-cell"
             >
@@ -218,7 +205,6 @@ const isEmpty = computed(() => props.products.length === 0);
           </div>
         </div>
       </div>
-
       <div class="bottom-bar">
         <div class="swipe-hint">
           &larr; Swipe to compare details &rarr;
@@ -252,7 +238,6 @@ const isEmpty = computed(() => props.products.length === 0);
   font-size: 20px;
   font-weight: 700;
   color: #111827;
-  margin: 0;
 }
 
 .compare-close-btn {
@@ -350,14 +335,13 @@ const isEmpty = computed(() => props.products.length === 0);
   font-size: 20px;
   font-weight: 800;
   color: #0f172a;
-  margin: 0;
 }
 
 .head-text .subtitle {
   font-size: 12px;
   color: #64748b;
-  margin: 2px 0 0 0;
-  font-weight: 600;
+
+  font-weight: 200;
 }
 
 .clear-btn {

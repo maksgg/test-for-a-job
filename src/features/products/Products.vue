@@ -2,10 +2,6 @@
 import { ref, onMounted, computed } from "vue";
 
 import useProductsRequest from "./api/useProductsRequest";
-import Compare from "./components/Compare.vue";
-import Favorite from "./components/Favorite.vue";
-import ProductCard from "./components/ProductCard.vue";
-import ProductTable from "./components/ProductTable.vue";
 import { useCatalogSearch } from "./composables/useCatalogSearch";
 import {
   filterProducts,
@@ -14,10 +10,10 @@ import {
 import { useCompare } from "./composables/useCompare";
 import { useFavorites } from "./composables/useFavorites";
 
+import { Compare, Favorite, ProductCard, ProductTable } from "@/features/products/components/index";
 import { toolbarConfig } from "@/features/products/constants/toolbarOptions";
 import type { Product } from "@/features/products/types";
-import VButton from "@/shared/components/VButton.vue";
-import VToolbar from "@/shared/components/VToolbar.vue";
+import { VButton, VToolbar } from "@/shared/components/index";
 
 const { fetchProducts, isLoading, error } = useProductsRequest();
 const products = ref<Product[]>([]);
@@ -35,7 +31,6 @@ const toolbarResult = computed(() => {
 });
 const { searchQuery, searchedProducts } = useCatalogSearch(toolbarResult, 300);
 
-// Отримуємо списки для пропсів Favorite та Compare
 const { loadSavedProducts, savedProducts, toggleSaveProduct } = useFavorites();
 const {
   comparedProducts,
@@ -45,10 +40,8 @@ const {
   loadComparedProducts,
 } = useCompare();
 
-// Простий boolean для пагінації
 const hasMore = computed(() => currentLimit.value < totalProducts.value);
 
-// Основна функція завантаження
 const fetchItems = async (limit: number) => {
   const result = await fetchProducts({ limit });
   if (result && typeof result === "object" && "products" in result) {
@@ -58,7 +51,6 @@ const fetchItems = async (limit: number) => {
   }
 };
 
-// Обробка запитів від таблиці
 const handleRequest = async (params: { limit: number }) => {
   await fetchItems(params.limit);
 };
@@ -84,12 +76,23 @@ onMounted(async () => {
 
 <template>
   <div class="products-container">
-    <div v-if="error" class="error-banner">
+    <div
+      v-if="error"
+      class="error-banner"
+    >
       <p>{{ error }}</p>
-      <button class="retry-button" @click="retryFetch">Спробувати знову</button>
+      <button
+        class="retry-button"
+        @click="retryFetch"
+      >
+        Try again
+      </button>
     </div>
     <Transition name="fade">
-      <div v-if="compareError" class="warning-banner">
+      <div
+        v-if="compareError"
+        class="warning-banner"
+      >
         <p>{{ compareError }}</p>
       </div>
     </Transition>
@@ -123,8 +126,10 @@ onMounted(async () => {
           :product="product"
         />
       </div>
-
-      <div v-if="hasMore" class="mobile-load-more">
+      <div
+        v-if="hasMore"
+        class="mobile-load-more"
+      >
         <VButton
           text="Load More"
           size="full"
@@ -147,20 +152,24 @@ onMounted(async () => {
 
 <style scoped>
 .products-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 40px;
   background-color: #f9fafb;
-  min-height: 100vh;
-  box-sizing: border-box;
 }
 
 .error-banner,
 .warning-banner {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
+  margin: 0 20px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
@@ -176,9 +185,6 @@ onMounted(async () => {
   background-color: #fef3c7;
   border: 1px solid #fde68a;
   color: #92400e;
-  position: sticky;
-  top: 24px;
-  z-index: 100;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -202,17 +208,6 @@ onMounted(async () => {
   display: none;
 }
 
-/* Приховуємо саму таблицю в ProductTable, коли нам потрібен лише тулбар */
-.only-toolbar :deep(.v-table-sticky-header) {
-  position: static;
-}
-.only-toolbar :deep(.v-table-header),
-.only-toolbar :deep(.v-table-body),
-.only-toolbar :deep(.v-table-footer) {
-  display: none !important;
-}
-
-/* Анімації */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s ease;
@@ -225,6 +220,7 @@ onMounted(async () => {
 .mobile-toolbar-wrapper {
   display: none;
 }
+
 @media (max-width: 768px) {
   .desktop-only {
     display: none;

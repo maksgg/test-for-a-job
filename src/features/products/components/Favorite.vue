@@ -1,24 +1,20 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import EmptyState from "@/features/products/components/EmptyState.vue";
-import type { Product } from "@/features/products/types";
+import { EmptyState } from "@/features/products/components/index";
+import type { Product } from "@/features/products/types/index";
 
 interface FavoriteProps {
   products: Product[];
 }
 
-const props = defineProps<FavoriteProps>();
+const { products } = defineProps<FavoriteProps>();
 
-const emit = defineEmits<{
-  remove: [product: Product];
-}>();
+const emit = defineEmits<{ remove: [product: Product] }>();
 
-const isEmpty = computed(() => props.products.length === 0);
+const isEmpty = computed(() => products.length === 0);
 
-const handleRemove = (product: Product) => {
-  emit("remove", product);
-};
+const handleRemove = (product: Product) => emit("remove", product);
 </script>
 
 <template>
@@ -33,13 +29,13 @@ const handleRemove = (product: Product) => {
   >
     <div class="favorite-header">
       <h2 class="favorite-title">
-        Favorites ({{ props.products.length }})
+        Favorites ({{ products.length }})
       </h2>
     </div>
 
     <div class="favorite-list no-scrollbar">
       <div
-        v-for="product in props.products"
+        v-for="product in products"
         :key="product.id"
         class="favorite-card"
       >
@@ -70,6 +66,9 @@ const handleRemove = (product: Product) => {
 
 <style scoped>
 .favorite-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin: 0 12px 24px 12px;
   padding: 24px;
   background: white;
@@ -78,39 +77,30 @@ const handleRemove = (product: Product) => {
   box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.favorite-header {
-  margin-bottom: 16px;
-}
-
 .favorite-title {
   font-size: 18px;
   font-weight: 700;
   color: #111827;
-  margin: 0;
 }
 
 .favorite-list {
-  display: grid; /* Перемикаємо на Grid */
-  /* Автоматична адаптивна сітка без медіа-запитів */
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
-  max-height: 45vh; /* Трохи збільшив, щоб сітка розкрила свій потенціал */
+  max-height: 30rem;
   overflow-y: auto;
-  padding: 8px;
+  padding-top: 8px;
 }
 
 .favorite-card {
-  /* ВИДАЛЯЄМО: width: 200px і flex: 0 0 200px */
   position: relative;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 12px;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-sizing: border-box; /* Гарантує, що паддінги не розіпруть картку */
 }
 
 .favorite-card:hover {
@@ -131,13 +121,13 @@ const handleRemove = (product: Product) => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 8px;
 }
 
 .favorite-card-title {
   font-size: 14px;
   font-weight: 600;
   color: #1f2937;
-  margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -147,13 +137,12 @@ const handleRemove = (product: Product) => {
   font-size: 14px;
   font-weight: 700;
   color: #059669;
-  margin: 0;
 }
 
 .favorite-card-remove {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 5px;
+  right: 5px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -165,13 +154,7 @@ const handleRemove = (product: Product) => {
   justify-content: center;
   cursor: pointer;
   font-size: 18px;
-  line-height: 1;
   transition: all 0.2s ease;
-  opacity: 0;
-}
-
-.favorite-card:hover .favorite-card-remove {
-  opacity: 1;
 }
 
 .favorite-card-remove:hover {

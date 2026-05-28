@@ -4,10 +4,8 @@ import { useFavorites } from "../composables/useFavorites";
 import { toolbarConfig } from "../constants/toolbarOptions";
 
 import type { Product } from "@/features/products/types";
-import VCheckbox from "@/shared/components/VCheckbox.vue";
-import VToolbar from "@/shared/components/VToolbar.vue";
 import Icon from "@/shared/components/icons/Icon.vue";
-import VTable from "@/shared/components/table/VTable.vue";
+import { VCheckbox, VToolbar, VTable } from "@/shared/components/index";
 import { firstLetterUp } from "@/shared/utils/firstLetterUp";
 
 interface ProductTableProps {
@@ -17,7 +15,7 @@ interface ProductTableProps {
   limit: number;
 }
 
-const props = defineProps<ProductTableProps>();
+const { rows, isLoading, hasMore, limit } = defineProps<ProductTableProps>();
 
 const emit = defineEmits<{
   request: [params: { limit: number }];
@@ -27,7 +25,6 @@ const emit = defineEmits<{
 const searchQuery = defineModel<string>("searchQuery");
 const toolbar = defineModel<any>("toolbar");
 
-// Локалізована логіка дій всередині таблиці
 const { isProductSaved, toggleSaveProduct } = useFavorites();
 const { isInCompare, toggleCompare } = useCompare();
 
@@ -51,12 +48,12 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
   <div class="table-container">
     <VTable
       :header="productsHeader"
-      :rows="props.rows"
+      :rows="rows"
       :searchable="true"
       :show-filters="true"
-      :loader="props.isLoading"
-      :has-more="props.hasMore"
-      :limit="props.limit"
+      :loader="isLoading"
+      :has-more="hasMore"
+      :limit="limit"
       @request="handleRequest"
     >
       <template #toolBar>
@@ -69,7 +66,6 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
           @reset-filters="resetFilters"
         />
       </template>
-
       <template #col-thumbnail="{ row }">
         <div class="thumbnail-cell">
           <img
@@ -89,13 +85,11 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
           </VCheckbox>
         </div>
       </template>
-
       <template #col-title="{ row }">
         <p class="product-title">
           {{ row.title }}
         </p>
       </template>
-
       <template #col-brand="{ row }">
         <p
           v-if="row.brand"
@@ -107,31 +101,26 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
           —
         </p>
       </template>
-
       <template #col-category="{ row }">
         <p class="product-category">
           {{ firstLetterUp(row.category) }}
         </p>
       </template>
-
       <template #col-price="{ row }">
         <p class="product-price">
           {{ row.price }}
         </p>
       </template>
-
       <template #col-rating="{ row }">
         <p class="product-rating">
           {{ row.rating }}
         </p>
       </template>
-
       <template #col-stock="{ row }">
         <p class="product-stock">
           {{ row.stock }}
         </p>
       </template>
-
       <template #col-compare="{ row }">
         <VCheckbox
           variant="custom"
@@ -153,25 +142,13 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
 :deep(.v-table-container) {
   padding: 0;
   background-color: transparent;
-  height: calc(100vh - 280px);
-  box-sizing: border-box;
-}
-
-:deep(.v-table-sticky-header) {
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  height: calc(100vh - 100px);
 }
 
 :deep(.v-table-wrapper) {
   background: white;
   border-radius: 12px;
   overflow: hidden;
-}
-
-/* Header styles */
-:deep(.v-table-header) {
-  background-color: #f8fafc;
-  border-bottom: 2px solid #f1f5f9;
 }
 
 :deep(.v-table-header-cell) {
@@ -183,24 +160,10 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
   letter-spacing: 0.05em;
 }
 
-/* Row and Cell styles */
-:deep(.v-table-row) {
-  border-bottom: 1px solid #f1f5f9;
-  transition: background-color 0.2s;
-}
-
 :deep(.v-table-row:hover) {
-  background-color: #f8fafc;
+  background-color: #fff;
 }
 
-:deep(.v-table-cell) {
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  border-bottom: none;
-}
-
-/* Product specific styles */
 .thumbnail-cell {
   display: flex;
   align-items: center;
@@ -216,7 +179,6 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
 }
 
 .product-title {
-  margin: 0;
   font-weight: 600;
   color: #1e293b;
   font-size: 14px;
@@ -227,7 +189,6 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
 
 .product-brand,
 .product-category {
-  margin: 0;
   padding: 4px 10px;
   border-radius: 100px;
   font-size: 12px;
@@ -246,14 +207,12 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
 }
 
 .product-price {
-  margin: 0;
-  font-weight: 700;
+  font-weight: 600;
   color: #059669;
   font-size: 15px;
 }
 
 .product-rating {
-  margin: 0;
   display: flex;
   align-items: center;
   font-weight: 600;
@@ -261,28 +220,12 @@ const handleRequest = (params: { limit: number }) => emit("request", params);
 }
 
 .product-rating::before {
-  content: "★";
-  margin-right: 4px;
   color: #f59e0b;
 }
 
 .product-stock {
-  margin: 0;
   font-weight: 500;
   color: #64748b;
   font-variant-numeric: tabular-nums;
-}
-
-/* Toolbar customization */
-:deep(.v-table-toolbar) {
-  padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-:deep(.v-table-toolbar p) {
-  margin: 0;
-  color: #94a3b8;
-  font-size: 13px;
-  font-style: italic;
 }
 </style>

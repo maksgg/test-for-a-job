@@ -3,16 +3,15 @@ import { useCompare } from "../composables/useCompare";
 import { useFavorites } from "../composables/useFavorites";
 
 import type { Product } from "@/features/products/types";
-import VCheckbox from "@/shared/components/VCheckbox.vue";
 import Icon from "@/shared/components/icons/Icon.vue";
+import { VCheckbox } from "@/shared/components/index";
 
 interface ProductCardProps {
   product: Product;
 }
 
-const props = defineProps<ProductCardProps>();
+const { product } = defineProps<ProductCardProps>();
 
-// Локалізована логіка дій всередині картки
 const { isProductSaved, toggleSaveProduct } = useFavorites();
 const { isInCompare, toggleCompare } = useCompare();
 </script>
@@ -21,8 +20,8 @@ const { isInCompare, toggleCompare } = useCompare();
   <div class="product-card">
     <div class="image-wrapper">
       <img
-        :src="props.product.thumbnail"
-        :alt="props.product.title"
+        :src="product.thumbnail"
+        :alt="product.title"
         class="product-image"
       >
       <button
@@ -32,43 +31,40 @@ const { isInCompare, toggleCompare } = useCompare();
         <Icon :filled="isProductSaved(product.id)" />
       </button>
       <div
-        v-if="props.product.discountPercentage > 0"
+        v-if="product.discountPercentage > 0"
         class="discount-badge"
       >
-        -{{ Math.round(props.product.discountPercentage) }}%
+        -{{ Math.round(product.discountPercentage) }}%
       </div>
     </div>
 
     <div class="product-content">
       <div class="meta-row">
-        <span class="category-tag">{{ props.product.category }}</span>
+        <span class="category-tag">{{ product.category }}</span>
         <div class="rating">
           <span class="star">★</span>
-          <span>{{ props.product.rating }}</span>
+          <span>{{ product.rating }}</span>
         </div>
       </div>
-
       <h3 class="product-title">
-        {{ props.product.title }}
+        {{ product.title }}
       </h3>
       <p class="product-brand">
-        {{ props.product.brand || "No Brand" }}
+        {{ product.brand || "No Brand" }}
       </p>
-
       <div class="price-row">
-        <span class="price">${{ props.product.price }}</span>
+        <span class="price">${{ product.price }}</span>
         <span
           class="stock-info"
-          :class="{ low: props.product.stock < 10 }"
+          :class="{ low: product.stock < 10 }"
         >
           {{
-            props.product.stock > 0
-              ? `${props.product.stock} in stock`
+            product.stock > 0
+              ? `${product.stock} in stock`
               : "Out of stock"
           }}
         </span>
       </div>
-
       <div class="actions">
         <VCheckbox
           label="Compare"
@@ -86,12 +82,9 @@ const { isInCompare, toggleCompare } = useCompare();
 .product-card {
   background: white;
   border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid #f1f5f9;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  height: 100%;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -105,7 +98,7 @@ const { isInCompare, toggleCompare } = useCompare();
 .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 75%; /* 4:3 Aspect Ratio */
+  aspect-ratio: 4 / 3;
   background: #f8fafc;
 }
 
@@ -116,7 +109,6 @@ const { isInCompare, toggleCompare } = useCompare();
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 12px;
 }
 
 .favorite-btn {
@@ -152,14 +144,13 @@ const { isInCompare, toggleCompare } = useCompare();
   padding: 16px;
   display: flex;
   flex-direction: column;
-  flex: 1;
+  gap: 8px;
 }
 
 .meta-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
 }
 
 .category-tag {
@@ -187,27 +178,17 @@ const { isInCompare, toggleCompare } = useCompare();
   font-size: 16px;
   font-weight: 700;
   color: #1e293b;
-  margin: 0 0 4px 0;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 2.8em;
 }
 
 .product-brand {
   font-size: 13px;
   color: #94a3b8;
-  margin: 0 0 12px 0;
 }
 
 .price-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto;
-  margin-bottom: 12px;
 }
 
 .price {

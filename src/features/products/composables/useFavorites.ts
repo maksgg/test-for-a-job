@@ -2,7 +2,6 @@ import { ref } from "vue";
 
 import type { Product } from "@/features/products/types";
 
-// Спільний стан (Singleton)
 const savedProducts = ref<Product[]>([]);
 const isLoaded = ref(false);
 

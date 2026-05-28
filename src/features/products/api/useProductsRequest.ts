@@ -20,7 +20,6 @@ export default () => {
         throw new Error(`Запит завершився зі статусом ${response.status}`);
       }
 
-      // Повертаємо весь об'єкт, щоб мати доступ до total, limit, skip
       return response.data;
     } catch (err: unknown) {
       let errorMessage = "Сталася помилка";

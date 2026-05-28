@@ -5,18 +5,18 @@ export interface Dimensions {
 }
 
 export interface Review {
-  rating: number; // На практиці тут зазвичай літерал 1 | 2 | 3 | 4 | 5
+  rating: number;
   comment: string;
-  date: string; // ISO Date string
+  date: string;
   reviewerName: string;
   reviewerEmail: string;
 }
 
 export interface ProductMeta {
-  createdAt: string; // ISO Date string
-  updatedAt: string; // ISO Date string
+  createdAt: string;
+  updatedAt: string;
   barcode: string;
-  qrCode: string; // URL string
+  qrCode: string;
 }
 
 export interface Product {
@@ -35,14 +35,12 @@ export interface Product {
   dimensions: Dimensions;
   warrantyInformation: string;
   shippingInformation: string;
-  availabilityStatus: "In Stock" | "Low Stock" | "Out of Stock" | string; // Можна звузити до літералів, якщо статусів обмежена кількість
-  reviews: Review[];
+  availabilityStatus: "In Stock" | "Low Stock" | "Out of Stock" | string;
   returnPolicy: string;
   minimumOrderQuantity: number;
   meta: ProductMeta;
-  images: string[]; // Масив URL-адрес
-  thumbnail: string; // URL-адреса
+  images: string[];
+  thumbnail: string;
 }
 
-// Якщо ти отримуєш масив (як у твоєму JSON)
 export type ProductList = Product[];
